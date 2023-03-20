@@ -16,7 +16,7 @@
 				<div class="btn-group">
 							
 							<button type="button" id="create" class="btn btn-lg btn-secondary text-success"
-								data-toggle="tooltip" title="Add New">
+								data-toggle="modal" data-target="#modal-fromright" title="Add New">
 								<i class="fa fa-plus-square"></i> add new
 							</button>
 							
@@ -37,10 +37,10 @@
 			</thead>
 			<tbody>
 			<c:forEach items="${roles }" var="element">
-				<tr>
-					<th class="text-center" scope="row">${element.id}</th>
-					<td>${element.nom}</td>
-					<td class="text-center">
+				<tr id="tr-role-${element.id}">
+					<th class="text-center" id="role-id-${element.id}" scope="row" >${element.id}</th>
+					<td id="role-nom-${element.id}">${element.nom}</td>
+					<td class="text-center"  id="role-action-${element.id}">
 						<div class="btn-group">
 							<button type="button" class="btn btn-sm btn-secondary text-primary edit"
 								data-toggle="modal" tabindex="${element.id}" data-target="#modal-fromright" title="role">

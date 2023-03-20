@@ -1,5 +1,6 @@
 package servlet;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -13,10 +14,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import org.jboss.logging.Logger;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import config.Config;
-import ejb_exam.dao.RoleDao;
+
+import ejb_exam.dto.request.RoleRequest;
 import ejb_exam.dto.response.RoleResponse;
+
 import ejb_exam.service.Role.RoleLocalService;
 
 /**
@@ -27,6 +31,7 @@ public class RoleServlet extends HttpServlet {
 	@EJB
 	private RoleLocalService roleService;
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = Logger.getLogger(RoleServlet.class);
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -61,8 +66,11 @@ public class RoleServlet extends HttpServlet {
 				writer.writeObject(roleJson);
 
 			} catch (Exception e) {
-				JsonObject roleJson = Json.createObjectBuilder().add("id", 0).add("nom", "").build();
-				writer.writeObject(roleJson);
+
+				JsonObject errorJson = Json.createObjectBuilder().add("message", e.getMessage()).build();
+				response.setStatus(400);
+				writer.writeObject(errorJson);
+
 			} finally {
 				writer.close();
 				out.flush();
@@ -72,7 +80,7 @@ public class RoleServlet extends HttpServlet {
 			List<RoleResponse> roles = roleService.list();
 			request.setAttribute("roles", roles);
 			request.setAttribute("page", "role");
-			request.setAttribute("entity", "Role");
+
 			request.getRequestDispatcher("/index.jsp").forward(request, response);
 		}
 	}
@@ -83,8 +91,103 @@ public class RoleServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		handleRequest(request, response, true);
+		
+	}
+
+	private void handleRequest(HttpServletRequest request, HttpServletResponse response,Boolean isCreate) throws IOException {
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		JsonWriter writer = Json.createWriter(out);
+		try {
+			BufferedReader reader = request.getReader();
+			StringBuilder sb = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line);
+			}
+			String jsonData = sb.toString();
+
+			// Parse the JSON data into a Java object
+			ObjectMapper objectMapper = new ObjectMapper();
+			RoleRequest role = objectMapper.readValue(jsonData, RoleRequest.class);
+			String[] actions = Config.setPath(request, "role");
+			logger.info("ACTION ID : "+actions);
+			RoleResponse roleResponse = new RoleResponse();
+			if (!role.getNom().isBlank()) {
+				if(isCreate)
+				{
+					roleResponse = roleService.saveRole(role);
+				}else if (actions.length > 0 && actions[0].matches("\\d+")){
+					
+					Long id = Long.parseLong(actions[0]);
+					roleResponse = roleService.editRole(id, role);
+					
+				}else {
+					logger.error("error in request");
+					throw new Exception("request error");
+				}
+				JsonObject roleJson = Json.createObjectBuilder().add("id", roleResponse.getId())
+						.add("nom", roleResponse.getNom()).build();
+				writer.writeObject(roleJson);
+
+
+				logger.info("nom is not blank");
+			} else {
+				throw new Exception("nom is empty");
+
+			}
+
+			
+
+
+		} catch (Exception e) {
+			logger.error(e.fillInStackTrace());
+			JsonObject errorJson = Json.createObjectBuilder().add("message", e.getMessage()).build();
+			response.setStatus(400);
+			writer.writeObject(errorJson);
+		} finally {
+			writer.close();
+			out.flush();
+		}
+	}
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		JsonWriter writer = Json.createWriter(out);
+		try {
+			String[] actions = Config.setPath(request, "role");
+			logger.info("ACTION ID : "+actions);
+			if (actions.length  > 0  && actions[0].matches("\\d+")) {
+				Long idRole = Long.parseLong(actions[0]);
+				roleService.delete(idRole);
+				JsonObject roleJson = Json.createObjectBuilder()
+						.add("message", "")
+						.build();
+				writer.writeObject(roleJson);
+
+
+				logger.info("nom is not blank");
+			} else {
+				throw new Exception("id should be given is empty");
+
+			}
+		} catch (Exception e) {
+			logger.error(e.fillInStackTrace());
+			JsonObject errorJson = Json.createObjectBuilder().add("message", e.getMessage()).build();
+			response.setStatus(400);
+			writer.writeObject(errorJson);
+		} finally {
+			writer.close();
+			out.flush();
+		}		
+	}
+
+	@Override
+	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		handleRequest(req, resp, false);
 	}
 
 }

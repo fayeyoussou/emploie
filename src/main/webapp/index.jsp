@@ -15,6 +15,7 @@
 	console.log(paths)
 	const script = document.createElement("script");
 	script.src = paths.join() + "assets/script.js";
+	script.type= "module";
 	document.head.appendChild(script);
 </script>
 <title>Insert title here</title>
@@ -61,6 +62,40 @@
 
 	<div id="page-container"
 		class="sidebar-o enable-page-overlay side-scroll page-header-modern main-content-boxed">
+		<div class="modal fade" id="modal-fromright" tabindex="-1"
+				role="dialog" aria-labelledby="modal-fromright" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-fromright" role="document">
+					<div class="modal-content">
+						<div class="block block-themed block-transparent mb-0">
+							<div class="block-header bg-primary-dark">
+								<h3 class="block-title" id="modal_title"></h3>
+								<div class="block-options">
+									<button type="button" class="btn-block-option"
+										data-dismiss="modal" aria-label="Close">
+										<i class="si si-close"></i>
+									</button>
+								</div>
+							</div>
+							<div class="block-content" id="block-content">
+								<c:if test="${page != null && page !='auth'}">
+									<jsp:include page="form/${page}.jsp" />
+									
+								</c:if>
+							</div>
+						</div>
+						
+						<div class="modal-footer">
+							<button type="button" class="btn btn-alt-secondary btn-edit"
+								data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-alt-success" id="modal-submit"
+								data-dismiss="modal">
+								<i class="fa fa-check"></i> Submit
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		<c:if test="${page == null || page != 'auth' }">
 		<!-- Side Overlay-->
 		<aside id="side-overlay">
 			<!-- Side Header -->
@@ -387,20 +422,9 @@
 			</div>
 			<!-- END Side Content -->
 		</aside>
-		<!-- END Side Overlay -->
 
-		<!-- Sidebar -->
-		<!--
-                Helper classes
 
-                Adding .sidebar-mini-hide to an element will make it invisible (opacity: 0) when the sidebar is in mini mode
-                Adding .sidebar-mini-show to an element will make it visible (opacity: 1) when the sidebar is in mini mode
-                    If you would like to disable the transition, just add the .sidebar-mini-notrans along with one of the previous 2 classes
-
-                Adding .sidebar-mini-hidden to an element will hide it when the sidebar is in mini mode
-                Adding .sidebar-mini-visible to an element will show it only when the sidebar is in mini mode
-                    - use .sidebar-mini-visible-b if you would like to be a block when visible (display: block)
-            -->
+		
 		<nav id="sidebar">
 			<!-- Sidebar Content -->
 			<div class="sidebar-content">
@@ -456,7 +480,7 @@
 
 					<!-- Visible only in normal mode -->
 					<div class="sidebar-mini-hidden-b text-center">
-						<a class="img-link" href="be_pages_generic_profile.html"> <img
+						<a class="img-link" href="/emploie"> <img
 							class="img-avatar" src="assets/media/avatars/avatar15.jpg" alt="">
 						</a>
 						<ul class="list-inline mt-10">
@@ -832,10 +856,10 @@
 								<li><a href="op_status.html">Status</a></li>
 								<li><a href="op_installation.html">Installation</a></li>
 							</ul></li>
-						<li><a class="nav-submenu" data-toggle="nav-submenu" href="#"><i
+						<li><a class="nav-submenu" data-toggle="nav-submenu" href="/emploie/auth"><i
 								class="si si-lock"></i><span class="sidebar-mini-hide">Authentication</span></a>
 							<ul>
-								<li><a href="be_pages_auth_all.html">All</a></li>
+								<li><a href="/emploie/auth">All</a></li>
 								<li><a href="op_auth_signin.html">Sign In</a></li>
 								<li><a href="op_auth_signin2.html">Sign In 2</a></li>
 								<li><a href="op_auth_signin3.html">Sign In 3</a></li>
@@ -1172,46 +1196,17 @@
 
 		<!-- Main Container -->
 		<main id="main-container">
-			<div class="modal fade" id="modal-fromright" tabindex="-1"
-				role="dialog" aria-labelledby="modal-fromright" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-fromright" role="document">
-					<div class="modal-content">
-						<div class="block block-themed block-transparent mb-0">
-							<div class="block-header bg-primary-dark">
-								<h3 class="block-title" id="modal_title"></h3>
-								<div class="block-options">
-									<button type="button" class="btn-block-option"
-										data-dismiss="modal" aria-label="Close">
-										<i class="si si-close"></i>
-									</button>
-								</div>
-							</div>
-							<div class="block-content" id="block-content">
-								<c:if test="${page != null }">
-									<jsp:include page="form/${page}.jsp" />
-								</c:if>
-							</div>
-						</div>
-						<div id="entity" title="${entity}"></div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-alt-secondary btn-edit"
-								data-dismiss="modal">Close</button>
-							<button type="button" class="btn btn-alt-success"
-								data-dismiss="modal">
-								<i class="fa fa-check"></i> Submit
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
+			
 			<!-- Page Content -->
 			<div class="content" id="content">
-
+				
 				<c:if test="${page != null }">
 					<jsp:include page="${page}.jsp" />
+					<input type="hidden" id="entity" value="${page}">
 				</c:if>
 				<c:if test="${page == null }">
 					<%@ include file="dashboard.jsp"%>
+					<input type="hidden" id="entity" value="">
 				</c:if>
 			</div>
 			<!-- END Page Content -->
@@ -1234,6 +1229,10 @@
 			</div>
 		</footer>
 		<!-- END Footer -->
+		</c:if>
+		<c:if test="${page == 'auth'}">
+			<%@ include file="auth.jsp"%>
+		</c:if>
 	</div>
 	<!-- END Page Container -->
 
@@ -1254,17 +1253,13 @@
             assets/js/core/jquery.countTo.min.js
             assets/js/core/js.cookie.min.js
         -->
-	<div id="notification" class="fade">the notification is here for
-		us to see</div>
+	<div id="notification" class="fade"></div>
 	<script src="assets/js/codebase.core.min.js"></script>
-
-	<!--
-            Codebase JS
-
-            Custom functionality including Blocks/Layout API as well as other vital and optional helpers
-            webpack is putting everything together at assets/_es6/main/app.js
-        -->
 	<script src="assets/js/codebase.app.min.js"></script>
 	<script src="assets/js/pages/be_ui_animations.min.js"></script>
+	<script src="assets/js/plugins/jquery-validation/jquery.validate.min.js"></script>
+    <script src="assets/js/pages/op_auth_signin.min.js"></script>
+	
 </body>
+	
 </html>
