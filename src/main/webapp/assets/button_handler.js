@@ -1,4 +1,3 @@
-import { Notification } from "./notification.js";
 import { Constante } from "./constante.js";
 import { FieldHandler } from "./field_handler.js";
 export class ButtonHandler {

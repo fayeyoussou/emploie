@@ -1,4 +1,3 @@
-import { Notification } from "./notification.js";
 
 export class UrlUpdater {
 
@@ -30,7 +29,7 @@ export class UrlUpdater {
         let pathnamearr = pathName.replace(/^\/+|\/+$/g, '').split("/");
         let hrefarr = href.replace(/^\/+|\/+$/g, '').split("/");
         let isSwitch = false
-        if ((pathnamearr.length > 1 && pathnamearr[1] === 'auth') && (hrefarr.length > 1 && hrefarr[1] === 'auth')) {
+        if ((pathnamearr.length > 1 && pathnamearr[1] === 'auth') || (hrefarr.length > 1 && hrefarr[1] === 'auth')) {
             isSwitch = true;
         }
         if (!href || href == "#" || (
@@ -62,7 +61,7 @@ export class UrlUpdater {
     }
 
     replaceContent(responseHtml, isSwitch) {
-            let contentId= isSwitch ? "content" : "page-container"
+            let contentId= isSwitch ? "page-container" : "content"
             const content = document.getElementById(contentId);
             
             content.classList.remove("fadeInLeft");
