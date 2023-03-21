@@ -5340,6 +5340,9 @@ a.close.disabled {
 .toast.hide {
   display: none;
 }
+.hide {
+  display: none;
+}
 
 .toast-header {
   display: -ms-flexbox;

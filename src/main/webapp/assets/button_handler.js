@@ -4,7 +4,7 @@ export class ButtonHandler {
     action = "create";
     id = 0
     fieldHandler = new FieldHandler();
-    
+
     entity = "";
     constructor(notification) {
         this.notification = notification
@@ -12,7 +12,7 @@ export class ButtonHandler {
     }
     getEntityName() {
         let value = document.getElementById("entity");
-        if(value != null) value = value.value
+        if (value != null) value = value.value
         if (value != null && value.trim().length > 0) {
             this.entity = value;
         }
@@ -57,34 +57,34 @@ export class ButtonHandler {
 
     handleDeleteButtons(deleteButtons) {
         deleteButtons.forEach(button => {
-            button.addEventListener('click', this.ondelete.bind(this,button));
+            button.addEventListener('click', this.ondelete.bind(this, button));
         });
     }
-    ondelete(button){
-        
-            const tabindex = button.getAttribute('tabindex');
-            const title = button.getAttribute('title');
-            this.id = tabindex
+    ondelete(button) {
 
-            let value = `
+        const tabindex = button.getAttribute('tabindex');
+        const title = button.getAttribute('title');
+        this.id = tabindex
+
+        let value = `
                 <p>Voulez vous vraiment supprimmer ${title}  ${tabindex}</p>
                 <div id="notification-buttons">
                     <button id="delete-notif" class="confirm">Confirm</button>
                     <button class="cancel">Cancel</button>
                 </div>
             `
-            this.notification.showNotification(value, true, 10000)
-            document.getElementById('delete-notif').addEventListener('click', this.handleDeleteConfirm.bind(this))
-            document.querySelector('.cancel').addEventListener('click', this.hideNotification.bind(this))
-        
+        this.notification.showNotification(value, true, 10000)
+        document.getElementById('delete-notif').addEventListener('click', this.handleDeleteConfirm.bind(this))
+        document.querySelector('.cancel').addEventListener('click', this.hideNotification.bind(this))
+
     }
     hideNotification() {
         this.notification.hideNotification();
     }
-    async handleDeleteConfirm(){
+    async handleDeleteConfirm() {
         this.notification.hideNotification()
         try {
-            let myUrl = Constante.pathfull + this.entity+"/"+this.id;
+            let myUrl = Constante.pathfull + this.entity + "/" + this.id;
             const response = await fetch(myUrl, {
                 method: 'DELETE',
             });
@@ -112,7 +112,7 @@ export class ButtonHandler {
             map.set(x.name, x.value)
         })
         let myUrl = Constante.pathfull + this.entity;
-        if(this.action == "edit")  myUrl = myUrl+"/"+this.id
+        if (this.action == "edit") myUrl = myUrl + "/" + this.id
         console.log(myUrl)
         console.log(this.id)
         try {
@@ -126,16 +126,16 @@ export class ButtonHandler {
             if (response.ok) {
                 const responseData = await response.json();
                 console.log(responseData)
-                if(this.action == "create"){
-                    let trow= document.createElement('tr');
+                if (this.action == "create") {
+                    let trow = document.createElement('tr');
                     let ident = responseData['id'];
                     trow.id = `tr-${this.entity}-${ident}`;
                     trow.classList.add("js-animation-object", "animated", "rollIn")
                     let inner = `<th class="text-center" id="${this.entity}-id-${ident}" scope="row" >${ident}</th>`;
-                    
-                    for (let x in responseData){
-						 if(x!='id') inner+= `<td id="${this.entity}-${x}-${ident}">${responseData[x]}</td>`
-					}
+
+                    for (let x in responseData) {
+                        if (x != 'id') inner += `<td id="${this.entity}-${x}-${ident}">${responseData[x]}</td>`
+                    }
                     //<tr id="tr-role-${element.id}">
                     trow.innerHTML = `
 					${inner}
@@ -150,17 +150,17 @@ export class ButtonHandler {
 								<i class="fa fa-times"></i>
 							</button>
 						</div>
-					</td>`   
+					</td>`
                     let body = document.getElementsByTagName('tbody')[0]
                     body.appendChild(trow)
                     this.handleButton(body)
-                }else{
+                } else {
                     let body = document.getElementsByTagName('tbody')[0]
                     let ident = responseData['id'];
 
-                    for (let x in responseData){
+                    for (let x in responseData) {
                         body.querySelector(`#${this.entity}-${x}-${ident}`).innerText = responseData[x]
-                   }
+                    }
                 }
                 this.notification.showNotification('Create success', true, 4000);
             } else {
@@ -172,18 +172,44 @@ export class ButtonHandler {
         }
 
     }
-
+    handleAuthSubmit(submit) {
+        submit.addEventListener('click', (event) => {
+            event.preventDefault();
+            let title = submit.getAttribute('title');
+            const authForm = document.querySelector(`#auth-win form`);
+            const formData = new FormData(authForm);
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+              }
+            console.log(formData)
+        })
+    }
     handleButton(element) {
-        const newEnt = element == null ? document.querySelector('#create') : element.querySelector('#create');
-        this.handleCreateButton(newEnt);
+        try {
+            const newEnt = element == null ? document.querySelector('#create') : element.querySelector('#create');
+            this.handleCreateButton(newEnt);
 
-        const editButtons = element == null ? document.querySelectorAll('.edit') : element.querySelectorAll('.edit');
-        this.handleEditButtons(editButtons);
-        let submitButtons = element == null ? document.querySelector('#modal-submit') : element.querySelector('#modal-submit');
-        if (submitButtons != null) submitButtons.addEventListener("click", this.handleSubmit.bind(this));
+            const editButtons = element == null ? document.querySelectorAll('.edit') : element.querySelectorAll('.edit');
+            this.handleEditButtons(editButtons);
+            let submitButtons = element == null ? document.querySelector('#modal-submit') : element.querySelector('#modal-submit');
+            if (submitButtons != null) submitButtons.addEventListener("click", this.handleSubmit.bind(this));
 
-        const deleteButtons = element == null ? document.querySelectorAll('.delete') : element.querySelectorAll('.delete');
-        this.handleDeleteButtons(deleteButtons);
-        this.getEntityName();
+            const deleteButtons = element == null ? document.querySelectorAll('.delete') : element.querySelectorAll('.delete');
+            this.handleDeleteButtons(deleteButtons);
+            const authForm = document.querySelector(`#auth-win`)
+            if (authForm != null) {
+                let submitButtons = authForm.getElementsByTagName('button');
+                for (const element of submitButtons) {
+                    let button = element; 
+                    if (button.type === 'submit') {
+                        this.handleAuthSubmit(button);
+                    }
+                }
+            }
+            this.getEntityName();
+        } catch (error) {
+            console.error('Create error:', error);
+        }
+
     }
 }
