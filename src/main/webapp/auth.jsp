@@ -32,44 +32,36 @@
                                 <!-- jQuery Validation functionality is initialized with .js-validation-signin class in js/pages/op_auth_signin.min.js which was auto compiled from _es6/pages/op_auth_signin.js -->
                                 <!-- For more examples you can check out https://github.com/jzaefferer/jquery-validation -->
                                 <form class="js-validation-signin px-30" action="be_pages_auth_all.html" method="post">
-                                    <div class="form-group row">
-                                        <div class="col-12">
-                                            <div class="form-material floating">
-                                                <input type="text" class="form-control" id="login-username" name="login-username">
-                                                <label for="login-username">Username</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-12">
-                                            <div class="form-material floating">
-                                                <input type="password" class="form-control" id="login-password" name="login-password">
-                                                <label for="login-password">Password</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-12">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="login-remember-me" name="login-remember-me">
-                                                <label class="custom-control-label" for="login-remember-me">Remember Me</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <button type="submit" class="btn btn-sm btn-hero btn-alt-primary">
-                                            <i class="si si-login mr-10"></i> Sign In
-                                        </button>
-                                        <div class="mt-30">
-                                            <a class="link-effect text-muted mr-10 mb-5 d-inline-block " href="register">
-                                                <i class="fa fa-plus mr-5"></i> Create Account
-                                            </a>
-                                            <a class="link-effect text-muted mr-10 mb-5 d-inline-block" href="#">
-                                                <i class="fa fa-warning mr-5"></i> Forgot Password
-                                            </a>
-                                        </div>
-                                    </div>
-                                </form>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <div class="form-material floating">
+                            <input type="text" class="form-control" id="login" name="login">
+                            <label for="login">Login</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <div class="form-material floating">
+                            <input type="password" class="form-control" id="password" name="password">
+                            <label for="password">Password</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" title= "login" class="btn btn-sm btn-hero btn-alt-primary">
+                        <i class="si si-login mr-10"></i> Sign In
+                    </button>
+                    <div class="mt-30">
+                        <a class="link-effect text-muted mr-10 mb-5 d-inline-block" href="register">
+                            <i class="fa fa-plus mr-5"></i> Create Account
+                        </a>
+                        <a class="link-effect text-muted mr-10 mb-5 d-inline-block" href="op_auth_reminder2.html">
+                            <i class="fa fa-warning mr-5"></i> Forgot Password
+                        </a>
+                    </div>
+                </div>
+            </form>
                                 <!-- END Sign In Form -->
                             </div>
                         </div>

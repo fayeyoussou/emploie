@@ -1,7 +1,7 @@
 
 export class Notification {
     notificationTimer = null;
-    showNotification(value, success, time) {
+    showNotification(value, success, time=4000) {
         let animated = document.getElementById("notification");
         animated.classList.remove("fadeOutRight")
         animated.classList.add("js-animation-object", "animated", "fadeInLeft")

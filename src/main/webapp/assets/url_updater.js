@@ -4,9 +4,11 @@ export class UrlUpdater {
 
     constructor(button, notification) {
         this.button = button;
+
         this.notification = notification;
-        console.log(this.button);
-        this.update()
+        // console.log(this.button);
+        button.urlUpdater = this;
+        this.checkPath();
     }
     display = null;
 
@@ -18,13 +20,35 @@ export class UrlUpdater {
             }
         }
     }
-    switchLoginRegister(href) {
+    async checkPath (pathName = window.location.pathname,recharge =true,isSwitch = true){
+		let isLogin = await this.isLogin();
+		//console.log("connecte :",isLogin)
+		//console.log("pathind :",pathName.indexOf("auth"))
         
+		if(!isLogin && pathName.indexOf("auth")==-1){
+			if(recharge)this.loadPage("/emploie/auth",true)
+            setTimeout(()=>{
+                this.notification.showNotification(`Vous ne pouvez pas acceder a ${pathName} car vous n'etes pas connecte.`)
+            },4000)
+            
+		}else if(isLogin && pathName.indexOf("auth")>= 0 ){
+			if(recharge)this.loadPage("/emploie",true)
+            setTimeout(()=>{
+                this.showNotification("Vous ne pouvez pas acceder a auth car vous etes deja connecte.")
+            },4000)
+            
+		} else if (pathName != window.location.pathname){
+            this.loadPage(pathName,isSwitch)
+        }
+		this.update()
+	}
+    switchLoginRegister(href) {
+
         let main = document.querySelector(`#auth-win`)
-       
+
 
         main.classList.add("js-animation-object", "animated", "fadeOutRight")
-        if(href == 'login'){
+        if (href == 'login') {
             main.innerHTML = `<div class="content content-full">
    
             <div class="px-30 py-10">
@@ -32,32 +56,24 @@ export class UrlUpdater {
                     <i class="si si-fire"></i>
                     <span class="font-size-xl text-primary-dark">code</span><span class="font-size-xl">base</span>
                 </a>
-                <h1 class="h3 font-w700 mt-30 mb-10">Welcome to Your Dashboard</h1>
-                <h2 class="h5 font-w400 text-muted mb-0">Please sign in</h2>
+                <h1 class="h3 font-w700 mt-30 mb-10">Welcome Job Emploie</h1>
+                <h2 class="h5 font-w400 text-muted mb-0">Ajouter Votre CV</h2>
             </div>
             
             <form class="js-validation-signin px-30" action="be_pages_auth_all.html" method="post">
                 <div class="form-group row">
                     <div class="col-12">
                         <div class="form-material floating">
-                            <input type="text" class="form-control" id="login-username" name="login-username">
-                            <label for="login-username">Username</label>
+                            <input type="text" class="form-control" id="login" name="login">
+                            <label for="login">Login</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-12">
                         <div class="form-material floating">
-                            <input type="password" class="form-control" id="login-password" name="login-password">
-                            <label for="login-password">Password</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-12">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="login-remember-me" name="login-remember-me">
-                            <label class="custom-control-label" for="login-remember-me">Remember Me</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                            <label for="password">Password</label>
                         </div>
                     </div>
                 </div>
@@ -77,7 +93,7 @@ export class UrlUpdater {
             </form>
             <!-- END Sign In Form -->
          </div>`
-        }else {
+        } else {
             main.innerHTML = `<div class="content content-full">
             <!-- Header -->
             <div class="px-30 py-10">
@@ -97,43 +113,92 @@ export class UrlUpdater {
                 <div class="form-group row">
                     <div class="col-12">
                         <div class="form-material floating">
-                            <input type="text" class="form-control" id="signup-username" name="signup-username">
-                            <label for="signup-username">Username</label>
+                            <input type="text" class="form-control" id="prenom" name="prenom">
+                            <label for="prenom">prenom</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-12">
                         <div class="form-material floating">
-                            <input type="email" class="form-control" id="signup-email" name="signup-email">
-                            <label for="signup-email">Email</label>
+                            <input type="text" class="form-control" id="nom" name="nom">
+                            <label for="nom">nom</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-12">
                         <div class="form-material floating">
-                            <input type="password" class="form-control" id="signup-password" name="signup-password">
-                            <label for="signup-password">Password</label>
+                            <input type="number" class="form-control" id="age" name="age">
+                            <label for="age">age</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-12">
                         <div class="form-material floating">
-                            <input type="password" class="form-control" id="signup-password-confirm" name="signup-password-confirm">
-                            <label for="signup-password-confirm">Password Confirmation</label>
+                            <input type="text" class="form-control" id="niveau" name="niveau">
+                            <label for="niveau">niveau</label>
                         </div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-12">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="signup-terms" name="signup-terms">
-                            <label class="custom-control-label" for="signup-terms">I agree to Terms &amp; Conditions</label>
+                        <div class="form-material floating">
+                            <input type="text" class="form-control" id="title" name="title">
+                            <label for="title">title</label>
                         </div>
                     </div>
                 </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <div class="form-material floating">
+                            <input type="text" class="form-control" id="telephone" name="telephone">
+                            <label for="telephone">telephone</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <div class="form-material">
+                            <textarea class="form-control" id="experiences" name="experiences" rows="8" placeholder="Ajouter l'experience"></textarea>
+                            <label for="experiences">Experiences</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <div class="form-material floating">
+                            <input type="email" class="form-control" id="Email" name="email">
+                            <label for="Email">Email</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <div class="form-material floating">
+                            <input type="email" class="form-control" id="login" name="login">
+                            <label for="login">login</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <div class="form-material floating">
+                            <input type="password" class="form-control" id="password" name="password">
+                            <label for="password">Password</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <div class="form-material floating">
+                            <input type="password" class="form-control" id="confirm" name="confirm">
+                            <label for="confirm">Password Confirmation</label>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <button type="submit"  title= "register" class="btn btn-sm btn-hero btn-alt-success">
                         <i class="fa fa-plus mr-10"></i> Create Account
@@ -142,7 +207,7 @@ export class UrlUpdater {
                         <a class="link-effect text-muted mr-10 mb-5 d-inline-block" href="#" data-toggle="modal" data-target="#modal-terms">
                             <i class="fa fa-book text-muted mr-5"></i> Read Terms
                         </a>
-                        <a class="link-effect text-muted mr-10 mb-5 d-inline-block" href="op_auth_signin2.html">
+                        <a class="link-effect text-muted mr-10 mb-5 d-inline-block" href="register" id="register-link">
                             <i class="fa fa-user text-muted mr-5"></i> Sign In
                         </a>
                     </div>
@@ -156,26 +221,38 @@ export class UrlUpdater {
         setTimeout(function () {
             main.classList.remove("js-animation-object", "animated", "fadeOutRight")
             main.classList.add("js-animation-object", "animated", "fadeInRight")
-            
+
             setTimeout(function () {
                 main.classList.remove("js-animation-object", "animated", "fadeInRight")
             }, 2000)
         }, 1000)
 
     }
-    handleClick(event) {
-        console.log("handleClick", event);
-        event.preventDefault();
-        let targetLink = event.target;
-        while (targetLink.tagName !== "A") {
-            targetLink = targetLink.parentElement;
+    async isLogin(){
+        const response = await fetch(Constante.pathfull+"auth/islogin");
+        const body = await response.json()
+        return body["result"]
+    }
+    async handleClick(event, hrefDirect = false) {
+        let href
+        this.checkPath(href)
+        if (hrefDirect) {
+            href = event
         }
-        const href = targetLink.getAttribute("href");
+        else {
+            console.log("handleClick", event);
+            event.preventDefault();
+            let targetLink = event.target;
+            while (targetLink.tagName !== "A") {
+                targetLink = targetLink.parentElement;
+            }
+            href = targetLink.getAttribute("href");
+        }
         if (href == "login" || href == "register") {
             this.switchLoginRegister(href);
             console.log("voila", href);
         }
-        else {
+        else if(await this.isLogin()){
             let pathName = window.location.pathname
             let pathnamearr = pathName.replace(/^\/+|\/+$/g, '').split("/");
             let hrefarr = href.replace(/^\/+|\/+$/g, '').split("/");
@@ -191,6 +268,8 @@ export class UrlUpdater {
                 return;
             }
             this.loadPage(href, isSwitch);
+        } else{
+            this.loadPage("/emploie/auth",true)
         }
     }
 
